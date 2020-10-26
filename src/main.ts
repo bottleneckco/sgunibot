@@ -31,6 +31,7 @@ async function main() {
   });
 
   const redis = REDIS_URL ? new Redis(REDIS_URL) : new Redis();
+
   const stage = new Stage([]);
 
   bot.use(session());
