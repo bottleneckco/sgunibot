@@ -73,6 +73,86 @@ const NUS: Uni = {
         },
       ],
     },
+    {
+      label: 'AY2021/2022 Semester 1',
+      periods: [
+        {
+          type: 'class',
+          date_start: '2021-08-09',
+          date_end: '2021-09-17',
+        },
+        {
+          type: 'recess',
+          date_start: '2021-09-18',
+          date_end: '2021-09-26',
+        },
+        {
+          type: 'exam',
+          date_start: '2021-09-27',
+          date_end: '2021-10-02',
+        },
+        {
+          type: 'class',
+          date_start: '2021-10-04',
+          date_end: '2021-11-12',
+        },
+        {
+          type: 'recess',
+          date_start: '2021-11-13',
+          date_end: '2021-11-29',
+        },
+        {
+          type: 'exam',
+          date_start: '2021-11-20',
+          date_end: '2021-12-04',
+        },
+        {
+          type: 'vacation',
+          date_start: '2021-12-05',
+          date_end: '2022-01-09',
+        },
+      ],
+    },
+    {
+      label: 'AY2021/2022 Semester 2',
+      periods: [
+        {
+          type: 'class',
+          date_start: '2022-01-10',
+          date_end: '2022-02-18',
+        },
+        {
+          type: 'recess',
+          date_start: '2022-02-19',
+          date_end: '2022-02-27',
+        },
+        {
+          type: 'exam',
+          date_start: '2022-02-28',
+          date_end: '2022-03-05',
+        },
+        {
+          type: 'class',
+          date_start: '2022-03-07',
+          date_end: '2022-04-15',
+        },
+        {
+          type: 'recess',
+          date_start: '2022-04-16',
+          date_end: '2022-04-22',
+        },
+        {
+          type: 'exam',
+          date_start: '2022-04-23',
+          date_end: '2022-05-07',
+        },
+        {
+          type: 'vacation',
+          date_start: '2022-05-08',
+          date_end: '2022-07-31',
+        },
+      ],
+    },
   ],
 };
 

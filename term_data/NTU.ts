@@ -63,6 +63,66 @@ const NTU: Uni = {
         },
       ],
     },
+    {
+      label: 'AY2021-22 Semester 1',
+      periods: [
+        {
+          type: 'class',
+          date_start: '2021-08-09',
+          date_end: '2021-09-24',
+        },
+        {
+          type: 'recess',
+          date_start: '2021-09-27',
+          date_end: '2021-10-01',
+        },
+        {
+          type: 'class',
+          date_start: '2021-10-04',
+          date_end: '2021-11-12',
+        },
+        {
+          type: 'exam',
+          date_start: '2021-11-15',
+          date_end: '2021-12-03',
+        },
+        {
+          type: 'vacation',
+          date_start: '2021-12-04',
+          date_end: '2021-01-09',
+        },
+      ],
+    },
+    {
+      label: 'AY2021-22 Semester 2',
+      periods: [
+        {
+          type: 'class',
+          date_start: '2022-01-10',
+          date_end: '2022-02-25',
+        },
+        {
+          type: 'recess',
+          date_start: '2022-02-28',
+          date_end: '2022-03-04',
+        },
+        {
+          type: 'class',
+          date_start: '2022-03-07',
+          date_end: '2022-04-15',
+        },
+        {
+          type: 'exam',
+          date_start: '2022-04-18',
+          date_end: '2022-05-06',
+        },
+        {
+          type: 'vacation',
+          date_start: '2022-05-07',
+          date_end: '2022-08-01',
+        },
+      ],
+    },
   ],
 };
 
