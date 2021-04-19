@@ -36,7 +36,7 @@ const getDaysToVacation = (date: Moment, term: Term) => {
     throw new Error('this term has no vacation');
   }
 
-  return moment.tz(vacation.date_start, 'Asia/Singapore').diff(date, 'days');
+  return date.diff(moment.tz(vacation.date_start, 'Asia/Singapore'), 'days');
 };
 
 type Status = {

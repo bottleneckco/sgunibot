@@ -50,7 +50,7 @@ const uni: Command = {
           .diff(now, 'days')}d\n`;
       }
 
-      message += `\`vacation  \` -${daysToVacation}d`;
+      message += `\`vacation  \` in ${daysToVacation}d`;
 
       message += '\n\n';
     }
