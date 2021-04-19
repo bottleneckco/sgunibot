@@ -37,6 +37,11 @@ const uni: Command = {
           'Asia/Singapore'
         );
 
+        // Fixes diff counting by using inclusive end
+        currentPeriodEnd.set('hour', 23);
+        currentPeriodEnd.set('minute', 59);
+        currentPeriodEnd.set('second', 59);
+
         message += `\`${padEnd(currentPeriod.type, 10)}\` ends in \`${moment
           .tz(currentPeriodEnd, 'Asia/Singapore')
           .diff(now, 'days')}d\` _(${currentPeriodEnd.format('D MMM')})_\n`;
