@@ -36,14 +36,15 @@ const uni: Command = {
 
         message += `\`${padEnd(currentPeriod.type, 10)}\` ${moment(
           currentPeriodEnd
-        ).diff(now, 'days')}d left _(till ${currentPeriodEnd.format('ll')})_\n`;
+        ).diff(now, 'days')}d remaining _(till ${currentPeriodEnd.format(
+          'D MMM YYYY'
+        )})_\n`;
       }
 
       if (nextPeriod) {
-        message += `\`${padEnd(nextPeriod.type, 10)}\` ${now.diff(
-          moment(nextPeriod.date_start),
-          'days'
-        )}d\n`;
+        message += `\`${padEnd(nextPeriod.type, 10)}\` in ${moment(
+          nextPeriod.date_start
+        ).diff(now, 'days')}d\n`;
       }
 
       message += `\`vacation  \` -${daysToVacation}d`;
