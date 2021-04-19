@@ -61,7 +61,13 @@ export default function getStatus(date = moment.tz('Asia/Singapore')): Status {
     for (const term of school.terms) {
       const termBounds = getTermBounds(term);
 
-      if (date.isBetween(termBounds.date_start, termBounds.date_end, 'days')) {
+      if (
+        date.isBetween(
+          moment.tz(termBounds.date_start, 'Asia/Singapore'),
+          moment.tz(termBounds.date_end, 'Asia/Singapore'),
+          'days'
+        )
+      ) {
         currentTerm = term;
       }
 
