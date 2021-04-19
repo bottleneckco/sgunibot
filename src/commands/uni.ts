@@ -1,5 +1,5 @@
 import { padEnd } from 'lodash';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 import { PeriodType } from '../../term_data/types';
 import getStatus from '../getStatus';
@@ -14,7 +14,7 @@ const PERIOD_EMOJI_MAP: Record<PeriodType, string> = {
 
 const uni: Command = {
   initialHandler: async (ctx) => {
-    const now = moment();
+    const now = moment.tz('Asia/Singapore');
     const currentStatus = getStatus(now);
 
     let message = '';
@@ -32,19 +32,22 @@ const uni: Command = {
       message += `${term.label}\n`;
 
       if (currentPeriod) {
-        const currentPeriodEnd = moment(currentPeriod.date_end);
+        const currentPeriodEnd = moment.tz(
+          currentPeriod.date_end,
+          'Asia/Singapore'
+        );
 
-        message += `\`${padEnd(currentPeriod.type, 10)}\` ${moment(
-          currentPeriodEnd
-        ).diff(now, 'days')}d remaining _(till ${currentPeriodEnd.format(
+        message += `\`${padEnd(currentPeriod.type, 10)}\` ${moment
+          .tz(currentPeriodEnd, 'Asia/Singapore')
+          .diff(now, 'days')}d remaining _(till ${currentPeriodEnd.format(
           'D MMM YYYY'
         )})_\n`;
       }
 
       if (nextPeriod) {
-        message += `\`${padEnd(nextPeriod.type, 10)}\` in ${moment(
-          nextPeriod.date_start
-        ).diff(now, 'days')}d\n`;
+        message += `\`${padEnd(nextPeriod.type, 10)}\` in ${moment
+          .tz(nextPeriod.date_start, 'Asia/Singapore')
+          .diff(now, 'days')}d\n`;
       }
 
       message += `\`vacation  \` -${daysToVacation}d`;

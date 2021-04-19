@@ -1,5 +1,5 @@
 import { find, findLast, first, last } from 'lodash';
-import moment, { Moment } from 'moment';
+import moment, { Moment } from 'moment-timezone';
 
 import DigiPen from '../term_data/DigiPen';
 import NTU from '../term_data/NTU';
@@ -23,7 +23,7 @@ const getDaysToPeriod = (date: Moment, term: Term, periodType: PeriodType) => {
     throw new Error(`no ${periodType} period!`);
   }
 
-  return moment(period.date_start).diff(date, 'days');
+  return moment.tz(period.date_start, 'Asia/Singapore').diff(date, 'days');
 };
 
 const getDaysToVacation = (date: Moment, term: Term) => {
@@ -36,7 +36,7 @@ const getDaysToVacation = (date: Moment, term: Term) => {
     throw new Error('this term has no vacation');
   }
 
-  return moment(vacation.date_start).diff(date, 'days');
+  return moment.tz(vacation.date_start, 'Asia/Singapore').diff(date, 'days');
 };
 
 type Status = {
@@ -49,7 +49,7 @@ type Status = {
   };
 };
 
-export default function getStatus(date = moment()): Status {
+export default function getStatus(date = moment.tz('Asia/Singapore')): Status {
   const result: Status = {};
 
   for (const school of UNIVERSITIES) {
