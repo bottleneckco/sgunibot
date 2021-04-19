@@ -65,7 +65,8 @@ export default function getStatus(date = moment.tz('Asia/Singapore')): Status {
         date.isBetween(
           moment.tz(termBounds.date_start, 'Asia/Singapore'),
           moment.tz(termBounds.date_end, 'Asia/Singapore'),
-          'days'
+          'days',
+          '[]'
         )
       ) {
         currentTerm = term;
@@ -76,7 +77,8 @@ export default function getStatus(date = moment.tz('Asia/Singapore')): Status {
           date.isBetween(
             moment.tz(period.date_start, 'Asia/Singapore'),
             moment.tz(period.date_end, 'Asia/Singapore'),
-            'day'
+            'days',
+            '[]'
           )
         ) {
           currentPeriod = period;
