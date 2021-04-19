@@ -50,7 +50,12 @@ const uni: Command = {
           .diff(now, 'days')}d\n`;
       }
 
-      message += `\`vacation  \` in ${daysToVacation}d`;
+      if (
+        currentPeriod?.type !== 'vacation' &&
+        nextPeriod?.type !== 'vacation'
+      ) {
+        message += `\`vacation  \` in ${daysToVacation}d`;
+      }
 
       message += '\n\n';
     }

@@ -36,7 +36,7 @@ const getDaysToVacation = (date: Moment, term: Term) => {
     throw new Error('this term has no vacation');
   }
 
-  return date.diff(moment.tz(vacation.date_start, 'Asia/Singapore'), 'days');
+  return moment.tz(vacation.date_start, 'Asia/Singapore').diff(date, 'days');
 };
 
 type Status = {
@@ -72,7 +72,13 @@ export default function getStatus(date = moment.tz('Asia/Singapore')): Status {
       }
 
       for (const [index, period] of term.periods.entries()) {
-        if (date.isBetween(period.date_start, period.date_end, 'day')) {
+        if (
+          date.isBetween(
+            moment.tz(period.date_start, 'Asia/Singapore'),
+            moment.tz(period.date_end, 'Asia/Singapore'),
+            'day'
+          )
+        ) {
           currentPeriod = period;
           prevPeriod = term.periods[index - 1];
           nextPeriod = term.periods[index + 1];
