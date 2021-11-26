@@ -114,10 +114,15 @@ async function main() {
   });
 
   if (NODE_ENV === 'production') {
-    await bot.telegram.setWebhook(`https://${WEBHOOK_DOMAIN}/telegram`);
+    await bot.launch({
+      webhook: {
+        domain: `https://${WEBHOOK_DOMAIN}/telegram`,
+        port: parseInt(PORT, 10),
+        hookPath: '/telegram',
+      },
+    });
 
     return new Promise((resolve) => {
-      bot.startWebhook('/telegram', null, parseInt(PORT, 10));
       //@ts-ignore
       (bot.webhookServer as Server).on('close', resolve);
     });
