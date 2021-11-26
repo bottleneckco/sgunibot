@@ -42,22 +42,34 @@ const uni: Command = {
         currentPeriodEnd.set('minute', 59);
         currentPeriodEnd.set('second', 59);
 
-        message += `\`${padEnd(currentPeriod.type, 10)}\` ends in \`${moment
+        message += '`';
+        message += padEnd(currentPeriod.type, 9);
+        message += '`';
+        message += ' ';
+        message += '(ongoing, ';
+        message += moment
           .tz(currentPeriodEnd, 'Asia/Singapore')
-          .diff(now, 'days')}d\` _(${currentPeriodEnd.format('D MMM')})_\n`;
+          .from(now, true);
+        message += ' to go)';
+        message += '\n';
       }
 
       if (nextPeriod) {
-        message += `\`${padEnd(nextPeriod.type, 10)}\` begins in \`${moment
-          .tz(nextPeriod.date_start, 'Asia/Singapore')
-          .diff(now, 'days')}d\`\n`;
+        message += '`';
+        message += padEnd(nextPeriod.type, 9);
+        message += '`';
+        message += ' ';
+        message += '(';
+        message += moment.tz(nextPeriod.date_start, 'Asia/Singapore').from(now);
+        message += ')';
+        message += '\n';
       }
 
       if (
         currentPeriod?.type !== 'vacation' &&
         nextPeriod?.type !== 'vacation'
       ) {
-        message += `\`vacation  \` begins in \`${daysToVacation}d\``;
+        message += `\`vacation \` (in ${daysToVacation} days)`;
       }
 
       message += '\n\n';
