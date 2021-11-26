@@ -7,7 +7,6 @@ import Redis from 'ioredis';
 import path from 'path';
 import Telegraf, { BaseScene, session, Stage } from 'telegraf';
 
-import { Command } from './types';
 const { leave } = Stage;
 
 const {
@@ -45,7 +44,7 @@ async function main() {
 
   for (const commandFile of commandFiles) {
     const exp = await import(path.resolve(commandFile));
-    const cmd = exp.default as Command;
+    const cmd = exp.default as SGUniBot.Command;
     const commandName = path
       .basename(commandFile)
       .replace(path.extname(commandFile), '');

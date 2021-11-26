@@ -11,7 +11,7 @@ const UNIVERSITIES: Record<string, string> = {
   SUTD: 'https://fourthclasshonours.github.io/school-semesters/SUTD.json',
 };
 
-const getTermBounds = (term: App.Term) => {
+const getTermBounds = (term: SchoolSemesters.Term) => {
   return {
     date_start: first(term.periods)?.date_start,
     date_end: last(term.periods)?.date_end,
@@ -20,8 +20,8 @@ const getTermBounds = (term: App.Term) => {
 
 const getDaysToPeriod = (
   date: Moment,
-  term: App.Term,
-  periodType: App.PeriodType
+  term: SchoolSemesters.Term,
+  periodType: SchoolSemesters.PeriodType
 ) => {
   const period = find(term.periods, (period) => period.type === periodType);
 
@@ -32,7 +32,7 @@ const getDaysToPeriod = (
   return moment.tz(period.date_start, 'Asia/Singapore').diff(date, 'days');
 };
 
-const getDaysToVacation = (date: Moment, term: App.Term) => {
+const getDaysToVacation = (date: Moment, term: SchoolSemesters.Term) => {
   const vacation = findLast(
     term.periods,
     (period) => period.type === 'vacation'
@@ -47,11 +47,11 @@ const getDaysToVacation = (date: Moment, term: App.Term) => {
 
 type Status = {
   [uni: string]: {
-    term: App.Term;
+    term: SchoolSemesters.Term;
     daysToVacation: number;
-    prevPeriod: App.Period | null;
-    currentPeriod: App.Period | null;
-    nextPeriod: App.Period | null;
+    prevPeriod: SchoolSemesters.Period | null;
+    currentPeriod: SchoolSemesters.Period | null;
+    nextPeriod: SchoolSemesters.Period | null;
   };
 };
 
@@ -61,12 +61,12 @@ export default async function getStatus(
   const result: Status = {};
 
   for (const [, url] of Object.entries(UNIVERSITIES)) {
-    const response = await axios.get<App.Uni>(url);
+    const response = await axios.get<SchoolSemesters.Uni>(url);
 
-    let currentTerm: App.Term | null = null;
-    let prevPeriod: App.Period | null = null;
-    let nextPeriod: App.Period | null = null;
-    let currentPeriod: App.Period | null = null;
+    let currentTerm: SchoolSemesters.Term | null = null;
+    let prevPeriod: SchoolSemesters.Period | null = null;
+    let nextPeriod: SchoolSemesters.Period | null = null;
+    let currentPeriod: SchoolSemesters.Period | null = null;
 
     for (const term of response.data.terms) {
       const termBounds = getTermBounds(term);

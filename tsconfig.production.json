@@ -8,6 +8,7 @@
   "include": [
     "src/main.ts",
     "src/commands",
-    "src/scheduled"
+    "src/scheduled",
+    "src/types"
   ]
 }

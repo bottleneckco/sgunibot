@@ -1,6 +1,4 @@
-import { Command } from '../types';
-
-const ping: Command = {
+const ping: SGUniBot.Command = {
   initialHandler: async (ctx) => {
     ctx.reply('pong');
   },

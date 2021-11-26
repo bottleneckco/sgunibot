@@ -1,21 +1,13 @@
-declare namespace App {
-  type PeriodType = 'class' | 'recess' | 'exam' | 'reading' | 'vacation';
+declare namespace SGUniBot {
+  import { SceneContextMessageUpdate } from 'telegraf/typings/stage';
 
-  interface Period {
-    date_start: string;
-    date_end: string;
-    type: PeriodType;
-    week_no?: number;
-  }
-
-  // Used to represent a term or semester
-  interface Term {
-    label: string;
-    periods: Period[];
-  }
-
-  interface Uni {
-    name: string;
-    terms: Term[];
+  interface Command {
+    initialHandler: (ctx: SceneContextMessageUpdate) => Promise<void>;
+    responseHandler?: (ctx: SceneContextMessageUpdate) => Promise<void>;
+    responseHandlers?: {
+      [option: string]: (ctx: SceneContextMessageUpdate) => Promise<void>;
+    };
+    callbackQueryHandler?: (ctx: SceneContextMessageUpdate) => Promise<void>;
+    manualSceneHandling?: boolean;
   }
 }

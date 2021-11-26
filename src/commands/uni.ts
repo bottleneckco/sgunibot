@@ -1,18 +1,9 @@
 import { padEnd } from 'lodash';
 import moment from 'moment-timezone';
 
-import { PeriodType } from '../../term_data/types';
 import getStatus from '../getStatus';
-import { Command } from '../types';
 
-const PERIOD_EMOJI_MAP: Record<PeriodType, string> = {
-  exam: '📝',
-  recess: '📘',
-  vacation: '🏖',
-  class: '📚',
-};
-
-const uni: Command = {
+const uni: SGUniBot.Command = {
   initialHandler: async (ctx) => {
     const now = moment.tz('Asia/Singapore');
     const currentStatus = await getStatus(now);
