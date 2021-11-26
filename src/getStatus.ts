@@ -1,22 +1,28 @@
+import axios from 'axios';
 import { find, findLast, first, last } from 'lodash';
 import moment, { Moment } from 'moment-timezone';
 
-import DigiPen from '../term_data/DigiPen';
-import NTU from '../term_data/NTU';
-import NUS from '../term_data/NUS';
-import SMU from '../term_data/SMU';
-import { Period, PeriodType, Term } from '../term_data/types';
+const UNIVERSITIES: Record<string, string> = {
+  DigiPen: 'https://fourthclasshonours.github.io/school-semesters/DigiPen.json',
+  NTU: 'https://fourthclasshonours.github.io/school-semesters/NTU.json',
+  NUS: 'https://fourthclasshonours.github.io/school-semesters/NUS.json',
+  SMU: 'https://fourthclasshonours.github.io/school-semesters/SMU.json',
+  SUSS: 'https://fourthclasshonours.github.io/school-semesters/SUSS.json',
+  SUTD: 'https://fourthclasshonours.github.io/school-semesters/SUTD.json',
+};
 
-const UNIVERSITIES = [SMU, NUS, NTU, DigiPen];
-
-const getTermBounds = (term: Term) => {
+const getTermBounds = (term: App.Term) => {
   return {
     date_start: first(term.periods)?.date_start,
     date_end: last(term.periods)?.date_end,
   };
 };
 
-const getDaysToPeriod = (date: Moment, term: Term, periodType: PeriodType) => {
+const getDaysToPeriod = (
+  date: Moment,
+  term: App.Term,
+  periodType: App.PeriodType
+) => {
   const period = find(term.periods, (period) => period.type === periodType);
 
   if (!period) {
@@ -26,7 +32,7 @@ const getDaysToPeriod = (date: Moment, term: Term, periodType: PeriodType) => {
   return moment.tz(period.date_start, 'Asia/Singapore').diff(date, 'days');
 };
 
-const getDaysToVacation = (date: Moment, term: Term) => {
+const getDaysToVacation = (date: Moment, term: App.Term) => {
   const vacation = findLast(
     term.periods,
     (period) => period.type === 'vacation'
@@ -41,24 +47,28 @@ const getDaysToVacation = (date: Moment, term: Term) => {
 
 type Status = {
   [uni: string]: {
-    term: Term;
+    term: App.Term;
     daysToVacation: number;
-    prevPeriod: Period | null;
-    currentPeriod: Period | null;
-    nextPeriod: Period | null;
+    prevPeriod: App.Period | null;
+    currentPeriod: App.Period | null;
+    nextPeriod: App.Period | null;
   };
 };
 
-export default function getStatus(date = moment.tz('Asia/Singapore')): Status {
+export default async function getStatus(
+  date = moment.tz('Asia/Singapore')
+): Promise<Status> {
   const result: Status = {};
 
-  for (const school of UNIVERSITIES) {
-    let currentTerm: Term | null = null;
-    let prevPeriod: Period | null = null;
-    let nextPeriod: Period | null = null;
-    let currentPeriod: Period | null = null;
+  for (const [, url] of Object.entries(UNIVERSITIES)) {
+    const response = await axios.get<App.Uni>(url);
 
-    for (const term of school.terms) {
+    let currentTerm: App.Term | null = null;
+    let prevPeriod: App.Period | null = null;
+    let nextPeriod: App.Period | null = null;
+    let currentPeriod: App.Period | null = null;
+
+    for (const term of response.data.terms) {
       const termBounds = getTermBounds(term);
 
       if (
@@ -94,7 +104,7 @@ export default function getStatus(date = moment.tz('Asia/Singapore')): Status {
     }
 
     if (currentTerm !== null) {
-      result[school.name] = {
+      result[response.data.name] = {
         term: currentTerm,
         daysToVacation: getDaysToVacation(date, currentTerm),
         prevPeriod,

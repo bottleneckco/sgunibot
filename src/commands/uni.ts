@@ -15,7 +15,7 @@ const PERIOD_EMOJI_MAP: Record<PeriodType, string> = {
 const uni: Command = {
   initialHandler: async (ctx) => {
     const now = moment.tz('Asia/Singapore');
-    const currentStatus = getStatus(now);
+    const currentStatus = await getStatus(now);
 
     let message = '';
 
