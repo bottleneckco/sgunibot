@@ -7,7 +7,7 @@
     "dotenv": "^8.2.0",
     "glob": "^7.1.6",
     "ioredis": "^4.19.0",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.33",
     "telegraf": "^3.38.0",
