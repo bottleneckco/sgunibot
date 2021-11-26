@@ -25,9 +25,7 @@ async function main() {
     throw new Error('Missing env vars!');
   }
 
-  const bot = new Telegraf(TELEGRAM_BOT_TOKEN, {
-    username: TELEGRAM_BOT_USERNAME,
-  });
+  const bot = new Telegraf(TELEGRAM_BOT_TOKEN);
 
   const redis = REDIS_URL ? new Redis(REDIS_URL) : new Redis();
 
@@ -64,6 +62,10 @@ async function main() {
     if (responseHandlers !== undefined) {
       // Fixed-answer handlers
       scene.on('message', (ctx) => {
+        if (!('text' in ctx.update.message)) {
+          return;
+        }
+
         const text = ctx.update.message?.text ?? '';
         console.log(`Received message: '${text}'`);
 
