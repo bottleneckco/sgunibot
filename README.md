@@ -1,3 +1,5 @@
-# telegram-bot-base
+# sgunibot
 
-Base repository to create a Telegram bot
+This Telegram bot displays information about the current SG uni timetable.
+
+![Screenshot of bot message](image.png)
