@@ -1,0 +1,11 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "sgunibot"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1pydelgwo9fde"
+s3_prefix = "sgunibot"
+region = "ap-southeast-1"
+capabilities = "CAPABILITY_IAM"
+image_repositories = []
+parameter_overrides = "TelegramBotToken=\"\""

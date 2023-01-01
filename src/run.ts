@@ -1,22 +1,20 @@
 import { config } from 'dotenv';
 config();
 
+import { DynamoDB } from 'aws-sdk';
 import glob from 'glob';
 import TelegramBot from 'node-telegram-bot-api';
 import path from 'path';
 
-import Command from './Command';
+import CommandEngine from './CommandEngine';
 
-const {
-  NODE_ENV,
-  TELEGRAM_BOT_TOKEN,
-  PORT = '3000',
-  WEBHOOK_DOMAIN,
-} = process.env;
+const { NODE_ENV, TELEGRAM_BOT_TOKEN } = process.env;
 
-const userSessions: Record<number, InstanceType<typeof Command>> = {};
+const db = new DynamoDB.DocumentClient();
 
-async function main() {
+const TableNameSession = 'sgunibot-session-table';
+
+export default async function run(update?: TelegramBot.Update) {
   if (!TELEGRAM_BOT_TOKEN) {
     throw new Error('Missing env vars!');
   }
@@ -24,28 +22,20 @@ async function main() {
   const options: TelegramBot.ConstructorOptions = {};
 
   const isProduction = NODE_ENV === 'production';
-  const isWebhook = isProduction && WEBHOOK_DOMAIN != null;
 
-  if (isWebhook) {
-    options.webHook = {
-      port: parseInt(PORT, 10),
-    };
-  } else {
+  if (!isProduction) {
     options.polling = true;
     console.log('Polling...');
   }
 
   const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, options);
 
-  if (isWebhook) {
-    await bot.setWebHook(`https://${WEBHOOK_DOMAIN}/telegram`);
-  }
-
   const commandFiles = glob.sync(
     path.join(__dirname, './commands/**/*.+(js|ts)')
   );
 
   bot.on('message', async (msg) => {
+    const chatId = msg.chat.id;
     const user = msg.from;
 
     if (user == null || user.is_bot) {
@@ -56,8 +46,20 @@ async function main() {
       `[MESSAGE] userId=${user.id} chatId=${msg.chat.id} text=${msg.text}`
     );
 
-    if (user.id in userSessions) {
-      const commandInstance = userSessions[user.id];
+    const existingChatSession = await db
+      .get({
+        TableName: TableNameSession,
+        Key: {
+          chatId,
+        },
+      })
+      .promise();
+
+    if (existingChatSession.Item != null) {
+      const commandInstance = CommandEngine.restoreSnapshot(
+        bot,
+        existingChatSession.Item.snapshot
+      );
 
       console.log(
         `[MESSAGE] sessionCommandName=${commandInstance.name} isEnded=${commandInstance.isEnded}`
@@ -66,10 +68,24 @@ async function main() {
       const msgText = msg.text ?? '';
 
       if (commandInstance.isEnded) {
-        delete userSessions[user.id];
+        await db
+          .delete({
+            TableName: TableNameSession,
+            Key: {
+              chatId,
+            },
+          })
+          .promise();
       } else if (msgText.slice(1) === 'cancel') {
         await commandInstance.cleanup();
-        delete userSessions[user.id];
+        await db
+          .delete({
+            TableName: TableNameSession,
+            Key: {
+              chatId,
+            },
+          })
+          .promise();
         await bot.sendMessage(msg.chat.id, 'Current command aborted');
         return;
       } else {
@@ -83,6 +99,16 @@ async function main() {
             msg.chat.id,
             `Sorry, I do not understand that. You have an ongoing /${commandInstance.name} session, use /cancel to abort.`
           );
+        } else {
+          await db
+            .put({
+              TableName: TableNameSession,
+              Item: {
+                chatId,
+                snapshot: commandInstance.snapshot(),
+              },
+            })
+            .promise();
         }
 
         return;
@@ -92,10 +118,10 @@ async function main() {
     let isHandled = false;
 
     for (const commandFile of commandFiles) {
-      const exp = await import(path.resolve(commandFile));
-      const CommandClass = exp.default as typeof Command;
+      const exp = require(path.resolve(commandFile));
+      const commandDefinition = exp.default as App.CommandDefinition;
 
-      const instance = new CommandClass(bot);
+      const instance = new CommandEngine(bot, commandDefinition);
       isHandled = await instance.handle(msg);
 
       console.log(
@@ -103,7 +129,15 @@ async function main() {
       );
 
       if (isHandled) {
-        userSessions[user.id] = instance;
+        await db
+          .put({
+            TableName: TableNameSession,
+            Item: {
+              chatId,
+              snapshot: instance.snapshot(),
+            },
+          })
+          .promise();
         break;
       }
     }
@@ -130,15 +164,34 @@ async function main() {
       `[CALLBACK QUERY] userId=${user.id} chatId=${chatId} data=${callbackQuery.data}`
     );
 
-    if (user.id in userSessions) {
-      const commandInstance = userSessions[user.id];
+    const existingChatSession = await db
+      .get({
+        TableName: TableNameSession,
+        Key: {
+          chatId,
+        },
+      })
+      .promise();
+
+    if (existingChatSession.Item != null) {
+      const commandInstance = CommandEngine.restoreSnapshot(
+        bot,
+        existingChatSession.Item.snapshot
+      );
 
       console.log(
         `[CALLBACK QUERY] sessionCommandName=${commandInstance.name} isEnded=${commandInstance.isEnded}`
       );
 
       if (commandInstance.isEnded) {
-        delete userSessions[user.id];
+        await db
+          .delete({
+            TableName: TableNameSession,
+            Key: {
+              chatId,
+            },
+          })
+          .promise();
       } else {
         const isHandled = await commandInstance.handle(callbackQuery);
 
@@ -150,6 +203,16 @@ async function main() {
             chatId,
             `Sorry, I do not understand that. You have an ongoing /${commandInstance.name} session, use /cancel to abort.`
           );
+        } else {
+          await db
+            .put({
+              TableName: TableNameSession,
+              Item: {
+                chatId,
+                snapshot: commandInstance.snapshot(),
+              },
+            })
+            .promise();
         }
 
         return;
@@ -160,9 +223,9 @@ async function main() {
 
     for (const commandFile of commandFiles) {
       const exp = await import(path.resolve(commandFile));
-      const CommandClass = exp.default as typeof Command;
+      const commandDefinition = exp.default as App.CommandDefinition;
 
-      const instance = new CommandClass(bot);
+      const instance = new CommandEngine(bot, commandDefinition);
       isHandled = await instance.handle(callbackQuery);
 
       console.log(
@@ -170,7 +233,15 @@ async function main() {
       );
 
       if (isHandled) {
-        userSessions[user.id] = instance;
+        await db
+          .put({
+            TableName: TableNameSession,
+            Item: {
+              chatId,
+              snapshot: instance.snapshot(),
+            },
+          })
+          .promise();
         break;
       }
     }
@@ -186,14 +257,11 @@ async function main() {
     console.error(err);
   });
 
+  if (update != null) {
+    bot.processUpdate(update);
+  }
+
   return new Promise((resolve) => {
     process.on('SIGINT', resolve);
   });
 }
-
-main()
-  .then(() => process.exit(0))
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  });
