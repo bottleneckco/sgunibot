@@ -1,6 +1,6 @@
 # sgunibot
 
-[![Deploy](https://github.com/fourthclasshonours/sgunibot/actions/workflows/deploy.yml/badge.svg)](https://github.com/fourthclasshonours/sgunibot/actions/workflows/deploy.yml)
+[![Deploy](https://github.com/foldaway/sgunibot/actions/workflows/deploy.yml/badge.svg)](https://github.com/foldaway/sgunibot/actions/workflows/deploy.yml)
 
 This Telegram bot displays information about the current SG uni timetable.
 

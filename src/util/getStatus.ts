@@ -3,12 +3,12 @@ import { find, findLast, first, flatMap, last } from 'lodash';
 import moment, { Moment } from 'moment-timezone';
 
 const UNIVERSITIES: Record<string, string> = {
-  DigiPen: 'https://fourthclasshonours.github.io/school-semesters/DigiPen.json',
-  NTU: 'https://fourthclasshonours.github.io/school-semesters/NTU.json',
-  NUS: 'https://fourthclasshonours.github.io/school-semesters/NUS.json',
-  SMU: 'https://fourthclasshonours.github.io/school-semesters/SMU.json',
-  SUSS: 'https://fourthclasshonours.github.io/school-semesters/SUSS.json',
-  SUTD: 'https://fourthclasshonours.github.io/school-semesters/SUTD.json',
+  DigiPen: 'https://foldaway.github.io/school-semesters/DigiPen.json',
+  NTU: 'https://foldaway.github.io/school-semesters/NTU.json',
+  NUS: 'https://foldaway.github.io/school-semesters/NUS.json',
+  SMU: 'https://foldaway.github.io/school-semesters/SMU.json',
+  SUSS: 'https://foldaway.github.io/school-semesters/SUSS.json',
+  SUTD: 'https://foldaway.github.io/school-semesters/SUTD.json',
 };
 
 const getTermBounds = (term: SchoolSemesters.Term) => {
